@@ -1,0 +1,3 @@
+package https
+
+type AuthHandler 
