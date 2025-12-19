@@ -14,7 +14,7 @@ type User struct {
 	UUID         uuid.UUID `json:"uuid"`
 	Name         string    `json:"name"`
 	Email        string    `json:"email"`
-	PasswordHash string    `json:"password_hash"`
+	PasswordHash string    `json:"password"`
 	CreatedAt    time.Time `json:"created_at"`
 }
 

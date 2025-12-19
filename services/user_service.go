@@ -13,10 +13,10 @@ import (
 )
 
 type UserService struct {
-	Repo repos.UserRepo
+	Repo repos.UserRepoInterface
 }
 
-func NewUserService(repo repos.UserRepo) *UserService {
+func NewUserService(repo repos.UserRepoInterface) *UserService {
 	return &UserService{
 		Repo: repo,
 	}
@@ -30,7 +30,8 @@ func (s *UserService) CreateUser(ctx context.Context, user models.User) (*models
 	}
 
 	user.PasswordHash = string(hashedPassword)
-	err = s.Repo.Create(ctx, user)
+
+	err := s.Repo.Create(ctx, user)
 	if err != nil {
 		return nil, fmt.Errorf("service: failed to create user %s: %w", user.Email, err)
 	}

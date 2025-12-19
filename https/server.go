@@ -2,6 +2,8 @@ package https
 
 import (
 	"TMS/config"
+	"TMS/https/handler"
+
 	"context"
 	"fmt"
 
@@ -14,11 +16,15 @@ import (
 
 type Server struct {
 	config config.Config
+	Auth   *handler.AuthHandler
+	User   *handler.UserHandler
 }
 
-func NewServer(config config.Config) *Server {
+func NewServer(config config.Config, auth *handler.AuthHandler, user *handler.UserHandler) *Server {
 	return &Server{
 		config: config,
+		Auth:   auth,
+		User:   user,
 	}
 }
 func (s *Server) Listen(ctx context.Context, port string) error {
@@ -31,6 +37,10 @@ func (s *Server) Listen(ctx context.Context, port string) error {
 
 	// API group
 	r.Route("/api/v1", func(r chi.Router) {
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/register", s.Auth.Register)
+			r.Post("/login", s.Auth.Login)
+		})
 
 	})
 	addr := port

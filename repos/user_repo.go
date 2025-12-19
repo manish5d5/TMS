@@ -27,7 +27,7 @@ func (r *UserRepo) Create(ctx context.Context, user models.User) error {
 	`
 
 	err := r.DB.QueryRow(ctx, query,
-		user.UUID, user.Name, user.Email, user.PasswordHash, user.CreatedAt,
+		user.UUID, user.Name, user.Email, user.PasswordHash,
 	).Scan(&user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to create user %s: %w", user.Email, err)

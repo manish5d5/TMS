@@ -12,7 +12,11 @@ import (
 
 	"TMS/config"
 	"TMS/https"
+	"TMS/https/handler"
+	"TMS/repos"
 	"TMS/repos/postgres"
+	service "TMS/services"
+	"TMS/utils/jwt"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -35,10 +39,24 @@ func InitializeServer(config config.Config, ctx context.Context) (*https.Server,
 		log.Printf("failed to connect to redis: %v", err)
 		return nil, err
 	}
+	secret := jwt.LoadJWT()
+
+	//db
+	userRepo := repos.NewUserRepo(pool)
 
 	//services
+	userService := service.NewUserService(userRepo)
+
+	authService := service.NewAuthService(userRepo, &jwt.Jwt{
+		SecretKey:     secret,
+		SecretKeyByte: []byte(secret),
+	})
+
+	authHandler := handler.NewAuthHandler(authService, userService)
+	userHandler := handler.NewUserHandler(userService)
+
 	fmt.Println(pool)
-	appserver := https.NewServer(config)
+	appserver := https.NewServer(config, authHandler, userHandler)
 
 	return appserver, nil
 
